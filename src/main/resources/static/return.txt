@@ -1,0 +1,74 @@
+@GetMapping("/home")
+public String showHomePage(Model model) {
+    model.addAttribute("message", "Welcome to our website!");
+    return "home"; // returns home.html
+}
+--------------------------------------------
+@PostMapping("/post")
+public String createBlog(@ModelAttribute("blog") Blog blog) {
+    // Save the blog and then redirect
+    blogRepository.save(blog);
+    return "redirect:/blogs"; // Redirects to the /blogs endpoint
+}
+----------------------------------------------------------
+@GetMapping("/api/blogs")
+@ResponseBody
+public List<Blog> getBlogs() {
+    return blogRepository.findAll(); // Returns a list of blogs as JSON
+}
+--------------------------------------------------------
+@GetMapping("/api/blogs")
+public ResponseEntity<List<Blog>> getBlogs() {
+    List<Blog> blogs = blogRepository.findAll();
+    return ResponseEntity.ok(blogs); // Returns a 200 OK with JSON body
+}
+-------------------------------------------------
+
+4. Error Pages
+You can also return error pages by returning specific view names 
+when exceptions occur.
+ You can create an error controller or use @ExceptionHandler methods:
+ 
+ @ExceptionHandler(Exception.class)
+public String handleError(Exception e) {
+    return "error"; // Returns error.html
+}
+ --------------------------------------------------------------
+ 
+ 
+ 5. ModelAndView
+For more complex scenarios, you can return a ModelAndView object,
+ which allows you to set both the model data and the view name
+
+ @GetMapping("/blog/{id}")
+public ModelAndView getBlog(@PathVariable Long id) {
+    Blog blog = blogRepository.findById(id).orElseThrow(() -> new BlogNotFoundException());
+    ModelAndView modelAndView = new ModelAndView("blog");
+    modelAndView.addObject("blog", blog);
+    return modelAndView; // Returns blog.html with the blog data
+}
+ 
+ -----------------------------------------------------------------
+ 6. File Downloads
+If your application needs to serve files, 
+you can return ResponseEntity with the file data:
+
+@GetMapping("/download/{fileName}")
+public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+    Resource file = // load the file resource
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+            .body(file);
+}
+-------------------------------------------------------------------------
+===================================================================================
+In summary, your Spring Boot controller methods can return various
+ types of responses when using Thymeleaf, including:
+
+HTML Views:-> For rendering templates.
+Redirects:-> For redirecting users after form submissions.
+JSON Responses:-> For AJAX calls or API responses.
+Error Pages:-> For handling exceptions gracefully.
+ModelAndView:-> For more complex view handling.
+File Downloads:-> For serving files to users.
+===============================================================================

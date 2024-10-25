@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Landing Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="font-sans">
+    <!-- Navbar -->
+    <nav class="bg-black shadow">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            
+            <a class="text-2xl font-bold text-white hover:text-blue-700" href="/">My Blog</a>
+            <div class="space-x-4">
+                <a href="/allblogs" class="text-white hover:text-blue-700">Datatable</a>
+                <a href="/" class="text-white hover:text-blue-500">About</a>
+                <a href="/" class="text-white hover:text-blue-500">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!-- Hero Section -->
+   <section class="bg-blue-500 text-white py-32"> <!-- Increased vertical padding -->
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-6xl font-bold">Welcome to My Blog</h1> <!-- Increased font size -->
+            <p class="mt-4 text-lg">Your daily dose of articles, tips, and stories</p>
+            <a href="#blog" class="mt-8 inline-block bg-white text-blue-500 py-3 px-6 rounded-full text-lg">Explore More</a> <!-- Increased button padding -->
+        </div>
+    </section>
+
+    <!-- Blog Cards Section -->
+    <section id="blog" class="py-20 h-screen flex justify-between items-center">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-10">Latest Posts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold">Blog Post Title 1</h3>
+                    <p class="mt-2 text-gray-600">A brief description of the blog post goes here.</p>
+                    <a href="#" class="mt-4 inline-block text-blue-500">Read More</a>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold">Blog Post Title 2</h3>
+                    <p class="mt-2 text-gray-600">A brief description of the blog post goes here.</p>
+                    <a href="#" class="mt-4 inline-block text-blue-500">Read More</a>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold">Blog Post Title 3</h3>
+                    <p class="mt-2 text-gray-600">A brief description of the blog post goes here.</p>
+                    <a href="#" class="mt-4 inline-block text-blue-500">Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="bg-gray-200 py-20  h-screen flex items-center">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-10">What Our Readers Say</h2>
+            <div class="flex gap-3 flex-col md:flex-row justify-between">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0 md:w-1/3">
+                    <p class="text-gray-600">"This blog is amazing! I learned so much!"</p>
+                    <p class="mt-4 font-bold">- Mohit Kumar</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0 md:w-1/3">
+                    <p class="text-gray-600">"I love the articles and tips provided here!"</p>
+                    <p class="mt-4 font-bold">- Ranu Gupta</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md md:w-1/3">
+                    <p class="text-gray-600">"A great source of inspiration and knowledge!"</p>
+                    <p class="mt-4 font-bold">- Chandan Yadav</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-6">
+        <div class="max-w-6xl mx-auto text-center">
+         
+            <p class="text-gray-600">© 2024 My Blog. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

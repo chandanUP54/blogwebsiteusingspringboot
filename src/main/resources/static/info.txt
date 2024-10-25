@@ -1,0 +1,42 @@
+1)
+Using @RestController in your Spring Boot application means that 
+the controller will return data directly to the client, typically as JSON or XML,
+ rather than rendering views like HTML templates
+ 
+ 2)
+ Since you want to render an HTML page with Thymeleaf-->>
+  you need to use @Controller instead.
+  
+  3)
+  th:field-->>
+  
+  -----------------------------------
+ 1)
+When you create a new blog, set the createdAt field to the current time in UTC:  
+@PostMapping("/post")
+public ResponseEntity<String> createBlog(@ModelAttribute("blog") Blog blog) {
+    // Set createdAt to the current time
+    blog.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC)); // or OffsetDateTime.now()
+
+    blogRepository.save(blog);
+    return ResponseEntity.ok("{\"status\":\"success\"}");
+}
+-----------------------------------------
+2)When you retrieve the createdAt field from the database,
+ it will automatically be in UTC. If you need to display it in IST (UTC+5:30), 
+ you can convert it as follows:
+ 
+@GetMapping("/blogs")
+public ResponseEntity<List<Blog>> getBlogs() {
+    List<Blog> blogs = blogRepository.findAll();
+    
+    // Convert createdAt to IST for display if needed
+    blogs.forEach(blog -> {
+        OffsetDateTime createdAtInIST = blog.getCreatedAt().withOffsetSameInstant(ZoneOffset.of("+05:30"));
+        // Use createdAtInIST as needed
+    });
+
+    return ResponseEntity.ok(blogs);
+}
+----------------------------------------
+  

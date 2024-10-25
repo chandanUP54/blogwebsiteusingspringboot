@@ -1,0 +1,6 @@
+   @Query("SELECT b FROM Blog b WHERE " +
+           "LOWER(b.title) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+           "LOWER(b.summary) LIKE LOWER(CONCAT('%', :searchValue, '%')) OR " +
+           "LOWER(b.content) LIKE LOWER(CONCAT('%', :searchValue, '%')) " +
+           "AND (b.createdAt BETWEEN :startDate AND :endDate OR b.publishedAt BETWEEN :startDate AND :endDate)")
+    Page<Blog> searchBlogs(String searchValue, ZonedDateTime startDate, ZonedDateTime endDate, Pageable pageable);
