@@ -8,7 +8,16 @@
 <link
 	href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
 	rel="stylesheet">
+<style>
+a {
+	color: #3b82f6;
+	text-decoration: none;
+}
 
+a:hover {
+	color: #2563eb;
+}
+</style>
 </head>
 
 <body>
@@ -57,23 +66,23 @@
 
 	<hr>
 	<div id="modal"
-		class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
+		class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex  justify-center">
 
-		<div class="bg-white rounded-lg shadow-lg p-6 w-2/3">
+		<div class="bg-white rounded-lg shadow-lg px-6 w-2/3">
 			<h1 id="formTitle" class="text-lg font-semibold my-3">Add New
 				Blog</h1>
 			<form id="blogform">
-				<div class="mb-3">
+				<div class="mb-1">
 					<label for="title" class="form-label">Title</label> <input
 						type="text" class="form-control mt-1 border rounded w-full p-2"
 						id="title" required>
 				</div>
-				<div class="mb-3">
+				<div class="mb-1">
 					<label for="summary" class="form-label">Summary</label>
 					<textarea class="form-control mt-1 border rounded w-full p-2"
 						id="summary" rows="2"></textarea>
 				</div>
-				<div class="mb-3">
+				<div class="mb-1">
 					<label for="content" class="form-label">Content</label>
 					<textarea class="form-control mt-1 border rounded w-full p-2"
 						id="content" rows="6"></textarea>
@@ -94,7 +103,7 @@
 		crossorigin="anonymous"></script>
 
 	<script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
-
+	<script src="/tinymce/tinymce.min.js"></script>
 	<script src="/datatable.js"></script>
 
 </body>

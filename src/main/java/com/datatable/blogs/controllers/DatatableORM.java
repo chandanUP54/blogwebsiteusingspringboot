@@ -27,7 +27,7 @@ public class DatatableORM {
 	private BlogService blogService;
 	
 	@Autowired
-	private BlogRepository blogRepository;
+	private BlogRepository blogRepository; 
 	
 	@PostMapping("/post")
 	public ResponseEntity<Blog> createBlog(@RequestBody Blog blog) {
@@ -84,6 +84,7 @@ public class DatatableORM {
 
 	@PostMapping("/allx")
 	public ResponseEntity<Map<String, Object>> getAllBlogs(@RequestBody Datatable datatable) {
+		
 		return blogService.getAllBlogs(datatable);
 	}
 

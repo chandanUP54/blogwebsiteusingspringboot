@@ -1,4 +1,7 @@
 $(document).ready(function() {
+	
+	
+	
 	const table = $("#example").DataTable({
 		serverSide: true,
 		ajax: {
@@ -163,9 +166,9 @@ $(document).ready(function() {
 		} else {
 			$("#title").val(tableData.title);
 
-			$("#summary").val(tableData.summary); //change
-			$("#content").val(tableData.content);
-
+			tinymce.get("summary").setContent(tableData.summary); //only where tiny mce applied
+			tinymce.get("content").setContent(tableData.content); //only where tiny mce applied
+			
 			// Switch to edit mode
 			isEditMode = true;
 			editRowId = tableData.id;
@@ -184,7 +187,7 @@ $(document).ready(function() {
 		console.log("submit is Edit", isEditMode);
 
 		e.preventDefault();
-
+		tinymce.triggerSave();
 
 		if (isEditMode) {
 			console.log("editing");
@@ -238,6 +241,8 @@ $(document).ready(function() {
 					modal.classList.add("hidden");
 					$("#blogform")[0].reset();
 
+					
+					
 				},
 				error: function(xhr, status, error) {
 					console.error("Error adding row:", error);
@@ -312,4 +317,70 @@ $(document).ready(function() {
 				}
 			}
 		});
+		
+	
+		
+		tinymce.init({
+		    selector: "textarea#content",
+		    height: 200,
+		    plugins: [
+		      "advlist",
+		      "autolink",
+		      "lists",
+		      "link",
+		      "image",
+		      "charmap",
+		      "preview",
+		      "anchor",
+		      "searchreplace",
+		      "visualblocks",
+		      "code",
+		      "fullscreen",
+		      "insertdatetime",
+		      "media",
+		      "table",
+		      "help",
+		      "wordcount",
+		    ],
+		    toolbar:
+		      "undo redo | blocks | " +
+		      "bold italic backcolor | alignleft aligncenter " +
+		      "alignright alignjustify | bullist numlist outdent indent | " +
+		      "removeformat | help",
+		    content_style:
+		      "body { font-family:Helvetica,Arial,sans-serif; font-size:16px }",
+		  });
+
+		  tinymce.init({
+		    selector: "textarea#summary",
+			height: 200,
+		    plugins: [
+		      "advlist",
+		      "autolink",
+		      "lists",
+		      "link",
+		      "image",
+		      "charmap",
+		      "preview",
+		      "anchor",
+		      "searchreplace",
+		      "visualblocks",
+		      "code",
+		      "fullscreen",
+		      "insertdatetime",
+		      "media",
+		      "table",
+		      "help",
+		      "wordcount",
+		    ],
+		    toolbar:
+		      "undo redo | blocks | " +
+		      "bold italic backcolor | alignleft aligncenter " +
+		      "alignright alignjustify | bullist numlist outdent indent | " +
+		      "removeformat | help",
+		    content_style:
+		      "body { font-family:Helvetica,Arial,sans-serif; font-size:16px }",
+		  });	
+		
+		
 });
