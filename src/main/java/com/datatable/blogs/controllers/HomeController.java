@@ -1,29 +1,28 @@
 package com.datatable.blogs.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.datatable.blogs.modal.Blog;
-import com.datatable.blogs.repository.BlogRepository;
+import com.datatable.blogs.services.BlogService;
 
 @Controller
 public class HomeController {
 
 	@Autowired
-	private BlogRepository blogRepository;
+	private BlogService blogService;
 
 	@GetMapping("/")
 	public String showHomePage(Model model) {
-		
-		System.out.println("hello");
+
+		List<Blog> recentBlogs = blogService.getRecentBlogs();
+
+		model.addAttribute("recentBlogs", recentBlogs);
+
 		return "home"; // View name for home page
 	}
 
@@ -35,6 +34,8 @@ public class HomeController {
 		return "blogdatatable";
 	}
 
-	
-
+	@GetMapping("/404")
+	public String handle404() {
+		return "error";
+	}
 }

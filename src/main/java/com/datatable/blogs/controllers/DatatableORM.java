@@ -1,11 +1,14 @@
 package com.datatable.blogs.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,27 +25,26 @@ import com.datatable.blogs.services.BlogService;
 @RequestMapping("/blogs")
 public class DatatableORM {
 
-	
 	@Autowired
 	private BlogService blogService;
-	
+
 	@Autowired
-	private BlogRepository blogRepository; 
-	
+	private BlogRepository blogRepository;
+
 	@PostMapping("/post")
 	public ResponseEntity<Blog> createBlog(@RequestBody Blog blog) {
-	    
-	    System.out.println("Submitting blog: " + blog);
 
-	    try {
+		System.out.println("Submitting blog: " + blog);
+
+		try {
 //	        Blog savedBlog = blogRepository.save(blog);
-	    	 Blog savedBlog = blogService.createBlog(blog);
-	        
-	        return ResponseEntity.status(HttpStatus.CREATED).body(savedBlog);
-	        
-	    } catch (Exception e) {	        
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-	    }
+			Blog savedBlog = blogService.createBlog(blog);
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(savedBlog);
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
 	}
 
 	@PutMapping("/edit/{id}")
@@ -84,8 +86,9 @@ public class DatatableORM {
 
 	@PostMapping("/allx")
 	public ResponseEntity<Map<String, Object>> getAllBlogs(@RequestBody Datatable datatable) {
-		
+
 		return blogService.getAllBlogs(datatable);
 	}
+
 
 }

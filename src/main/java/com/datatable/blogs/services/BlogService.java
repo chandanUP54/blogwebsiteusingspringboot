@@ -1,5 +1,6 @@
 package com.datatable.blogs.services;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -20,5 +21,7 @@ public interface BlogService {
 	ResponseEntity<Map<String, Object>> getAllBlogs(Datatable datatable);
 
 	Blog createBlog(Blog blog);
+
+	List<Blog> getRecentBlogs();
 
 }

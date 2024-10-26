@@ -1,5 +1,7 @@
 package com.datatable.blogs.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +22,9 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
             "DATE_FORMAT(published_at, '%d %b %Y %H:%i') LIKE LOWER(CONCAT('%', :searchValue, '%'))",
     nativeQuery = true)
     Page<Blog> searchBlogs(String searchValue, Pageable pageable);
+	
+	
+    Page<Blog> findByPublishedAtTrueOrderByCreatedAtDesc(Pageable pageable);
+
+
 }
