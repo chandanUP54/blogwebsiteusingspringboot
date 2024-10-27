@@ -1,0 +1,10 @@
+1)Database Configuration-->>
+
+2)Security Configuration-->>
+
+3)MVC Configuration--->>
+If you are using Spring MVC features like Thymeleaf,
+ you might have a configuration class for that:
+ 
+4)Message Source Configuration-->>
+For internationalization (i18n), you might want to define a message source:

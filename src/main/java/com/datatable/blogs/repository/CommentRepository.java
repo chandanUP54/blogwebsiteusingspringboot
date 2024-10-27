@@ -9,5 +9,5 @@ import com.datatable.blogs.modal.Comment;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-	 List<Comment> findByBlogId(long blogId);
+	List<Comment> findByBlogId(long blogId);
 }

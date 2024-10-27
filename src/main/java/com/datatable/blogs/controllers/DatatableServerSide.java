@@ -6,37 +6,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.datatable.blogs.modal.Blog;
 import com.datatable.blogs.modal.Datatable;
 import com.datatable.blogs.modal.Datatable.Order;
-import com.datatable.blogs.services.BlogService;
 
 @Controller
 @RequestMapping("/blogs")
 public class DatatableServerSide {
-
-	@Autowired
-	private BlogService blogService;
-	
-	
-	
 
 	private static final String DB_URL = "jdbc:mysql://localhost:3306/blogs";
 	private static final String DB_USER = "root";
@@ -68,7 +56,7 @@ public class DatatableServerSide {
 			for (Order order : orders) {
 				int columnIndex = order.getColumn();
 				String direction = order.getDir().equalsIgnoreCase("desc") ? "DESC" : "ASC";
-				String columnName1 = datatable.getColumns().get(columnIndex).getData(); 																	
+				String columnName1 = datatable.getColumns().get(columnIndex).getData();
 				query1 += (" ORDER BY " + columnName1 + " " + direction);
 			}
 		}
@@ -86,7 +74,7 @@ public class DatatableServerSide {
 				stmt.setString(2, searchPattern);
 				stmt.setString(3, searchPattern);
 				stmt.setString(4, searchPattern);
-				
+
 			}
 
 			// Set pagination parameters,1,2 for setInt
@@ -133,18 +121,13 @@ public class DatatableServerSide {
 		blog.setSummary(resultSet.getString("summary"));
 		blog.setContent(resultSet.getString("content"));
 
-		System.out.println("result->"+resultSet.getTimestamp("created_at"));
-		
-		 Timestamp createdAt = resultSet.getTimestamp("created_at");
-		    blog.setCreatedAt(createdAt != null 
-		        ? createdAt.toInstant().atZone(ZoneId.of("UTC")) 
-		        : null);
+		System.out.println("result->" + resultSet.getTimestamp("created_at"));
 
-		    
-		    Timestamp publishedAt = resultSet.getTimestamp("published_at");
-		    blog.setPublishedAt(publishedAt != null 
-		        ? publishedAt.toInstant().atZone(ZoneId.of("Asia/Kolkata")) 
-		        : null);
+		Timestamp createdAt = resultSet.getTimestamp("created_at");
+		blog.setCreatedAt(createdAt != null ? createdAt.toInstant().atZone(ZoneId.of("UTC")) : null);
+
+		Timestamp publishedAt = resultSet.getTimestamp("published_at");
+		blog.setPublishedAt(publishedAt != null ? publishedAt.toInstant().atZone(ZoneId.of("Asia/Kolkata")) : null);
 		return blog;
 	}
 }

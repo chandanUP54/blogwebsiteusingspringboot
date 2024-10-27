@@ -76,7 +76,7 @@ $(document).ready(function() {
 
 					const withoutHtml = unescapeHtml(data);
 					const plainText = stripHtml(withoutHtml); // Strip HTML tags
-					console.log("Plain text:", plainText); // Log the plain text
+					//console.log("Plain text:", plainText); // Log the plain text
 
 					if (plainText.length >= 150) {
 						return plainText.substring(0, 150) + "....."
@@ -152,7 +152,7 @@ $(document).ready(function() {
 
 			tableComment.ajax.reload();
 
-			console.log("unclicked");
+			//console.log("unclicked");
 
 			tableComment.ajax.url(`/allComments/0`).load();
 		} else {
@@ -162,12 +162,12 @@ $(document).ready(function() {
 				.each((row) => row.classList.remove("selected"));
 			classList.add("selected");
 
-			console.log("row clicked");
+			//console.log("row clicked");
 
 			const tablesel = table.row(".selected");
 			const tableData = tablesel.data();
 
-			console.log("table data->", tableData)
+			//console.log("table data->", tableData)
 
 			const blog_id = tableData.id;
 
@@ -183,7 +183,7 @@ $(document).ready(function() {
 		const tablesel = table.row(".selected");
 		const tableData = tablesel.data();
 
-		console.log("<--tablex->", tableData)
+		//console.log("<--tablex->", tableData)
 
 		if (tableData == undefined) {
 			alert("please selected row");
@@ -205,18 +205,16 @@ $(document).ready(function() {
 
 	});
 
-	console.log("is edit", isEditMode);
-
 	$("#blogform").on("submit", function(e) {
-		console.log("submit is Edit", isEditMode);
+		//console.log("submit is Edit", isEditMode);
 
 		e.preventDefault();
 		tinymce.triggerSave();
 
 		if (isEditMode) {
-			console.log("editing");
+			//console.log("editing");
 
-			console.log("id", editRowId);
+			//console.log("id", editRowId);
 
 			var title = $("#title").val();
 			var summary = $("#summary").val();
@@ -252,7 +250,7 @@ $(document).ready(function() {
 				content: content,
 			};
 
-			console.log("form data", formData);
+			//console.log("form data", formData);
 
 			$.ajax({
 				url: "/blogs/post",

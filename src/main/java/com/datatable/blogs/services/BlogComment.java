@@ -14,5 +14,4 @@ public interface BlogComment {
 
 	Comment updateComment(Comment commentReq, long commentID, long blogID);
 
-	
 }
