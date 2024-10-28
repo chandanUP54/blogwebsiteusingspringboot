@@ -1,5 +1,6 @@
 package com.datatable.blogs.controllers;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.datatable.blogs.dto.SignInRequest;
+import com.datatable.blogs.dto.SignUpRequest;
 import com.datatable.blogs.modal.Blog;
+import com.datatable.blogs.modal.Users;
 import com.datatable.blogs.services.BlogService;
 
 @Controller
@@ -19,20 +23,10 @@ public class HomeController {
 	private BlogService blogService;
 
 	@GetMapping("/")
-	public String showHomePage(Model model) {
+	public String showHomePage(Model model, Principal principal) {
 
 		List<Blog> recentBlogs = blogService.getRecentBlogs();
-
 		model.addAttribute("recentBlogs", recentBlogs);
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isLoggedIn = auth != null && auth.isAuthenticated();
-     
-        
-        System.out.println("islogged->"+isLoggedIn); 
-
-        model.addAttribute("isLoggedIn", isLoggedIn);
-       
 
 		return "home"; // View name for home page
 	}
@@ -42,6 +36,7 @@ public class HomeController {
 
 		Blog blog = new Blog();
 		model.addAttribute("blog", blog);
+
 		return "blogdatatable";
 	}
 
@@ -49,14 +44,32 @@ public class HomeController {
 	public String handle404() {
 		return "error";
 	}
+
 	
+	@GetMapping("/admin")
+	public String getAdmin(Model model) {
+
+		return "admin";
+	}
+
 	@GetMapping("/signin")
-	public String getSignin() {
-		
+	public String getSignin(Model model) {
+		model.addAttribute("signInRequest", new SignInRequest());
+
 		return "signin";
 	}
+
+	
 	@GetMapping("/signup")
-	public String getSignup() { 
+	public String getSignup(Model model) {
+		model.addAttribute("signUpRequest", new SignUpRequest());
+
 		return "signup";
+	}
+	
+	@GetMapping("/about")
+	public String getMapping() {
+		
+		return "about";
 	}
 }

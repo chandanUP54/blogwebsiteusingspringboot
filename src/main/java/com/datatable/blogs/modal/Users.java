@@ -1,11 +1,8 @@
 package com.datatable.blogs.modal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.Set;
+
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -16,9 +13,18 @@ public class Users {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-
-//	@Column(unique = true) 
 	private String email;
 	private String password;
-	private String roles;
+	
+	
+	//private String roles;
+	
+	
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 }

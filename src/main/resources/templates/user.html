@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+	rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+	<div class="text-center">
+		<h1 class="text-6xl font-bold text-gray-800">User</h1>
+
+		<h3>
+			Id: <span th:text="${user.id}"></span>
+		</h3>
+		<h3>
+			Username: <span th:text="${user.email}"></span>
+		</h3>
+		<h3>
+			Role: <span th:text="${role}"></span>
+		</h3>
+		
+		<a href="/"
+			class="mt-6 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Go
+			Back Home</a>
+	</div>
+
+
+</body>
+</html>

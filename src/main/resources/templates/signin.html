@@ -1,3 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Signin</title>
+</head>
+<body>
+	<section
+		class="h-dvh bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-96 mx-auto mt-20 mb-20">
+		<h2 class="text-2xl font-bold mb-6 text-center">Sign In</h2>
+		<div th:if="${param.logout}" class="text-green-500 mb-4">
+			<h3>You have been logged out.</h3>
+		</div>
+		<form th:action="@{/signin}" th:object="${signInRequest}"
+			method="post">
+			<div class="mb-4">
+				<label class="block text-gray-700 text-sm font-bold mb-2"
+					for="username">Email</label> <input
+					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					id="username" type="email" placeholder="Enter Username"
+					th:field="*{username}" required />
+			</div>
+			<div class="mb-4">
+				<label class="block text-gray-700 text-sm font-bold mb-2"
+					for="password">Password</label> <input
+					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					id="password" type="password" placeholder="Password"
+					th:field="*{password}" required />
+			</div>
+			<div class="flex items-center justify-between">
+				<button
+					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+					type="submit">Sign In</button>
+			</div>
+		</form>
+		<p class="mt-4 text-center text-gray-600 text-sm">
+			Don't have an account? <a href="/signup"
+				class="text-blue-500 hover:text-blue-700">Sign up</a>
+		</p>
+		<p class="mt-2 text-center text-gray-600 text-sm">
+			<a href="#" class="text-blue-500 hover:text-blue-700">Forgot
+				Password?</a>
+		</p>
+		<div th:if="${errorMessage}" class="text-red-500">
+			<p th:text="${errorMessage}"></p>
+		</div>
+
+	</section>
+</body>
+</html>
+
+
+
+
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,8 +74,8 @@
 				BlogX</a>
 			<div class="space-x-4">
 				<a href="/allblogs" class="text-white hover:text-blue-700">Datatable</a>
-				<a href="/" class="text-white hover:text-blue-500">About</a> <a
-					href="/" class="text-white hover:text-blue-500">Contact</a>
+				<a href="/signin" class="text-white hover:text-blue-500">Signin</a>
+				<a href="/" class="text-white hover:text-blue-500">Contact</a>
 			</div>
 		</div>
 	</nav>
@@ -56,36 +113,10 @@
 		</p>
 	</div>
 
-<script>
-	
-	document.getElementById("signinform").addEventListener("submit",function(e){
-		e.preventDefault();
-		 const username = document.getElementById('username').value;
-	        const password = document.getElementById('password').value;
-
-	        fetch('/signin', {
-	            method: 'POST',
-	            headers: {
-	                'Content-Type': 'application/json'
-	            },
-	            body: JSON.stringify({ username, password })
-	        })
-	        .then(response => {
-	            if (!response.ok) {
-	                throw new Error('Network response was not ok');
-	            }
-	            return response.json();
-	        })
-	        .then(data => {
-	            // Handle successful signup (e.g., redirect, show a message)
-	            console.log('Signin successful',data.token);
-	            localStorage.setItem('jwtToken', data.token); // Store token
-	            window.location.href = '/';
-	        })
-	        .catch(error => {
-	            console.error('There was a problem with the signin request:', error);
-	        });
-	})
-</script>
+	<script src="/signin.js">
+		
+	</script>
 </body>
 </html>
+ -->
+

@@ -11,21 +11,73 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.datatable.blogs.modal.Users;
 
+//public class UserInfoDetails implements UserDetails {
+//	private String email;
+//	private String password;
+//	private List<GrantedAuthority> roles;
+//
+//	public UserInfoDetails(Users ourUser) {
+//		this.email = ourUser.getEmail();
+//		this.password = ourUser.getPassword();
+//		this.roles = Arrays.stream(ourUser.getRoles().split(",")).map(SimpleGrantedAuthority::new)
+//				.collect(Collectors.toList());
+//	}
+//
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		return this.roles;
+//	}
+//
+//	@Override
+//	public String getPassword() {
+//		return this.password;
+//	}
+//
+//	@Override
+//	public String getUsername() {
+//		return this.email;
+//	}
+//
+//	@Override
+//	public boolean isAccountNonExpired() {
+//		return true;
+//	}
+//
+//	@Override
+//	public boolean isAccountNonLocked() {
+//		return true;
+//	}
+//
+//	@Override
+//	public boolean isCredentialsNonExpired() {
+//		return true;
+//	}
+//
+//	@Override
+//	public boolean isEnabled() {
+//		return true;
+//	}
+//}
+
+
+
+
 public class UserInfoDetails implements UserDetails {
 	private String email;
 	private String password;
-	private List<GrantedAuthority> roles;
+	private List<GrantedAuthority> authorities;
 
 	public UserInfoDetails(Users ourUser) {
+
 		this.email = ourUser.getEmail();
 		this.password = ourUser.getPassword();
-		this.roles = Arrays.stream(ourUser.getRoles().split(",")).map(SimpleGrantedAuthority::new)
+		this.authorities = ourUser.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName().name()))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.roles;
+		return this.authorities;
 	}
 
 	@Override

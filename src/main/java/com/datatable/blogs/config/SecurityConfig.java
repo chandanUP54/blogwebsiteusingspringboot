@@ -16,7 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.datatable.blogs.userservices.CustomSuccessHandler;
 import com.datatable.blogs.userservices.UserInfoUserDetailsService;
 
 @Configuration
@@ -26,6 +28,9 @@ public class SecurityConfig {
 
 	@Autowired
 	private JwtAuthFilter jwtAuthFilter;
+
+	@Autowired
+	CustomSuccessHandler customSuccessHandler;
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -40,14 +45,25 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/admin/**", "/allblogs").hasRole("ADMIN") // Admin
 
-				.authorizeHttpRequests(
-						authorize -> authorize.requestMatchers("/api/**").authenticated().anyRequest().permitAll())
+						.requestMatchers("/user/**").hasRole("USER") // User endpoints
+						.requestMatchers("/api/**").authenticated() // All other API endpoints
 
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+						.anyRequest().permitAll() // Permit all other requests
+				).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+
 				.authenticationProvider(authenticationProvider())
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
+				//.formLogin(form -> form.loginPage("/signin").loginProcessingUrl("/signin")
+					//	.successHandler(customSuccessHandler).permitAll())
+				.logout(form -> form.invalidateHttpSession(true).clearAuthentication(true)
+						.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).deleteCookies("JSESSIONID","token","refreshToken")
+						.logoutSuccessUrl("/signin?logout=true").permitAll())
+
+		;
+		
 		return http.build();
 	}
 
@@ -64,4 +80,6 @@ public class SecurityConfig {
 		return config.getAuthenticationManager();
 	}
 
+
+	
 }

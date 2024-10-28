@@ -1,0 +1,10 @@
+Enum Naming Convention:-->>> In Spring Security, role names typically use the ROLE_ prefix.
+ If RoleName is being used with hasRole("ROLE_ADMIN") in the security configuration,
+  this prefix is necessary. You’re using ROLE_ADMIN, ROLE_USER, and ROLE_REGULAR 
+  as enum values, which aligns well.
+
+Authorization Configuration:--->> When using hasRole, 
+remember that Spring Security automatically adds the ROLE_ prefix when 
+checking roles. So, if you set roles as ROLE_ADMIN in your enum,
+ you can just use .hasRole("ADMIN") in your security configuration without adding 
+ the ROLE_ prefix there.
