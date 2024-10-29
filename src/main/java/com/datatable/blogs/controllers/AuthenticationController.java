@@ -77,54 +77,17 @@ public class AuthenticationController {
 		}
 	}
 
-	@PostMapping("/signinxxxxxxxxxx")
-	public String generateToken(@ModelAttribute SignInRequest signInRequest, HttpServletResponse response,
-			HttpSession session) {
-		try {
-			JwtAuthenticationResponse jwtResponse = authenticationService.signin(signInRequest);
-
-			// Create and set the JWT token cookie
-			Cookie tokenCookie = new Cookie("token", jwtResponse.getToken());
-			tokenCookie.setMaxAge(60 * 60 * 24); // 1 day
-			tokenCookie.setHttpOnly(true); // Prevent JavaScript access
-			tokenCookie.setPath("/"); // Accessible throughout the application
-//			tokenCookie.setSecure(true);
-			response.addCookie(tokenCookie);
-
-			// Optionally, set a refresh token if needed
-			Cookie refreshTokenCookie = new Cookie("refreshToken", jwtResponse.getRefreshToken());
-			refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-			refreshTokenCookie.setHttpOnly(true);
-			refreshTokenCookie.setPath("/");
-//			refreshTokenCookie.setSecure(true);
-
-			response.addCookie(refreshTokenCookie);
-
-			// fetching role,
-
-			String jwtString = jwtResponse.getToken();
-
-			Users users = authenticationService.findUserUsingJwt(jwtString);
-
-			for (Role role : users.getRoles()) {
-				String roleName = role.getName().name(); // This will give you the enum name as a string
-				System.out.println("Role: " + roleName);
-
-				// session.setAttribute("roles", roleName);
-			}
-
-			return "redirect:/";
-		} catch (Exception e) {
-			session.setAttribute("msg", "Invalid credentials");
-			return "redirect:/signin";
-		}
-	}
-
+	
 	@PostMapping("/signin")
-	public String login(String username, String password, Model model, HttpServletRequest request) {
-		Optional<Users> userOptional = userRepository.findByEmail(username);
+	public String login(@ModelAttribute SignInRequest signInRequest, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
 
-		if (userOptional.isPresent() && passwordEncoder.matches(password, userOptional.get().getPassword())) {
+		System.out.println("signin" + signInRequest);
+
+		Optional<Users> userOptional = userRepository.findByEmail(signInRequest.getUsername());
+
+		if (userOptional.isPresent()
+				&& passwordEncoder.matches(signInRequest.getPassword(), userOptional.get().getPassword())) {
 			Users user = userOptional.get();
 
 			System.out.println("user" + user);
@@ -139,6 +102,25 @@ public class AuthenticationController {
 
 			// Set authentication to the SecurityContext
 			SecurityContextHolder.getContext().setAuthentication(authToken);
+
+			JwtAuthenticationResponse jwtResponse = authenticationService.signin(signInRequest);
+			
+			// Create and set the JWT token cookie
+			Cookie tokenCookie = new Cookie("token", jwtResponse.getToken());
+			tokenCookie.setMaxAge(60 * 60 * 24); // 1 day
+			//tokenCookie.setHttpOnly(true); // Prevent JavaScript access-->>
+			tokenCookie.setPath("/"); // Accessible throughout the application
+			tokenCookie.setSecure(true);
+			response.addCookie(tokenCookie);
+
+			// Optionally, set a refresh token if needed
+			Cookie refreshTokenCookie = new Cookie("refreshToken", jwtResponse.getRefreshToken());
+			refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+			refreshTokenCookie.setHttpOnly(true);
+			refreshTokenCookie.setPath("/");
+		    refreshTokenCookie.setSecure(true);
+
+			response.addCookie(refreshTokenCookie);
 
 			HttpSession session = request.getSession(true);
 			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());

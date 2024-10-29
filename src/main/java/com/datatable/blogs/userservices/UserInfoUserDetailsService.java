@@ -14,11 +14,11 @@ import com.datatable.blogs.repository.UserRepository;
 @Configuration
 public class UserInfoUserDetailsService implements UserDetailsService {
 	@Autowired
-	private UserRepository ourUserRepo;
+	private UserRepository userRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<Users> user = ourUserRepo.findByEmail(username);
+		Optional<Users> user = userRepository.findByEmail(username);
 		System.out.println("user from user info details service: --->> " + user);
 		return user.map(UserInfoDetails::new).orElseThrow(() -> new UsernameNotFoundException("User Does Not Exist"));
 	}

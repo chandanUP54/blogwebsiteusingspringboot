@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +34,12 @@ public class Comment {
     @JsonBackReference // Prevents infinite recursion
     private Blog blog;
 
+
+    //-->>
+    @ManyToOne
+    @JsonIgnore  // will not show user details
+    @JoinColumn(name = "user_id")
+    private Users users;
     
     @Column(name = "created_at", updatable = false)
     private ZonedDateTime createdAt;

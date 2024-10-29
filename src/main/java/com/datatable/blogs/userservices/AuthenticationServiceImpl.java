@@ -20,12 +20,11 @@ import com.datatable.blogs.repository.RoleRepository;
 import com.datatable.blogs.repository.UserRepository;
 import com.datatable.blogs.response.JwtAuthenticationResponse;
 
-
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Autowired
-	private UserRepository workerRepository;
+	private UserRepository userRepository;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
@@ -34,70 +33,49 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private JwtService jwtService;
 	@Autowired
 	private RoleRepository roleRepository;
-
-//	@Override
-//	public Users signup(SignUpRequest signUpRequest) throws UserException {
-//	    System.out.println("Inside signup");
-//
-//	    String email = signUpRequest.getEmail();
-//	    Optional<Users> optionalUser = workerRepository.findByEmail(email);
-//
-//	    // Check if the user is present
-//	    if (optionalUser.isPresent()) {
-//	        throw new UserException("Email is already used with another account");
-//	    }
-//
-//	    Users newUser = new Users();
-//	    newUser.setEmail(email);
-//	    newUser.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-//	    newUser.setRoles("USER");
-//
-//	    return workerRepository.save(newUser);
-//	}
-
 	
+
 	public Users signup(SignUpRequest signUpRequest) throws UserException {
-		
-		System.out.println("inside signup-->>"+signUpRequest);
-		
-	    String username = signUpRequest.getEmail();
-	    Optional<Users> optionalUser = workerRepository.findByEmail(username);
 
-	    if (optionalUser.isPresent()) {
-	        throw new UserException("Username is already taken");
-	    }
+		System.out.println("inside signup-->>" + signUpRequest);
 
-	    Users newUser = new Users();
-	    newUser.setEmail(username);
-	    newUser.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+		String username = signUpRequest.getEmail();
+		Optional<Users> optionalUser = userRepository.findByEmail(username);
 
-	    System.out.println("here-->>"+newUser);
-	   
-	    Role userRole = roleRepository.findByName(RoleName.ROLE_USER);
+		if (optionalUser.isPresent()) {
+			throw new UserException("Username is already taken");
+		}
+
+		Users newUser = new Users();
+		newUser.setEmail(username);
+		newUser.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+
+		System.out.println("here-->>" + newUser);
+
+		Role userRole = roleRepository.findByName(RoleName.ROLE_USER);
 //	    Role userRole = roleRepository.findByName(RoleName.ROLE_ADMIN);
-	    if (userRole == null) {
-	        userRole = new Role();
-	        userRole.setName(RoleName.ROLE_USER);
+		if (userRole == null) {
+			userRole = new Role();
+			userRole.setName(RoleName.ROLE_USER);
 //	        userRole.setName(RoleName.ROLE_ADMIN);
-	        
-	        
-	        roleRepository.save(userRole); // Save the role first
-	    }
 
-	    newUser.setRoles(Set.of(userRole)); // Now set the user role
+			roleRepository.save(userRole); // Save the role first
+		}
 
-	    return workerRepository.save(newUser);
+		newUser.setRoles(Set.of(userRole)); // Now set the user role
+
+		return userRepository.save(newUser);
 	}
 
 	@Override
 	public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
-		
-		System.out.println("signin------>>>"+signInRequest);
+
+		System.out.println("signin------>>>" + signInRequest);
 
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(signInRequest.getUsername(), signInRequest.getPassword()));
 
-		var workers = workerRepository.findByEmail(signInRequest.getUsername())
+		var workers = userRepository.findByEmail(signInRequest.getUsername())
 				.orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
 		System.out.println("workers from auth service impl :->" + workers);
@@ -120,7 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		System.out.println("username or email from jwt: " + userEmail);
 
-		Users users = workerRepository.findByEmail(userEmail).orElseThrow();
+		Users users = userRepository.findByEmail(userEmail).orElseThrow();
 
 		if (users == null) {
 			throw new UserException("user not found with email: " + userEmail);

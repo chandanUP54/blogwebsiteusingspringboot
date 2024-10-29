@@ -16,10 +16,6 @@ public class Users {
 	private String email;
 	private String password;
 	
-	
-	//private String roles;
-	
-	
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",
@@ -27,4 +23,8 @@ public class Users {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+    
+   
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "users")
+    private Set<Comment> comments;
 }

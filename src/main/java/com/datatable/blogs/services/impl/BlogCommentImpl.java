@@ -3,13 +3,18 @@ package com.datatable.blogs.services.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.datatable.blogs.exception.UserException;
 import com.datatable.blogs.modal.Blog;
 import com.datatable.blogs.modal.Comment;
+import com.datatable.blogs.modal.Users;
 import com.datatable.blogs.repository.BlogRepository;
 import com.datatable.blogs.repository.CommentRepository;
 import com.datatable.blogs.services.BlogComment;
+import com.datatable.blogs.userservices.AuthenticationService;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -22,15 +27,26 @@ public class BlogCommentImpl implements BlogComment {
 	@Autowired
 	private BlogRepository blogRepository;
 
+	@Autowired
+	private AuthenticationService authenticationService;
+
 	@Override
-	public Comment createComment(Comment comment, long blogId) {
+	public Comment createComment(Comment comment, long blogId, String jwt) {
 		Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new EntityNotFoundException("Blog not found"));
 
-		// Set the blog reference for the comment
-		comment.setBlog(blog);
+		Comment comment2 = new Comment();
+		try {
+			Users users = authenticationService.findUserUsingJwt(jwt);
+			comment2.setBlog(blog);
+			comment2.setComment(comment.getComment());
+			comment2.setUsers(users);
+			comment2 = commentRepository.save(comment2);
+			System.out.println("user" + users);
+		} catch (UserException e) {
+			e.printStackTrace();
+		}
 
-		// Save the comment to the repository
-		return commentRepository.save(comment); // Make sure this is returning the saved comment
+		return comment2;
 	}
 
 	@Override
@@ -40,31 +56,36 @@ public class BlogCommentImpl implements BlogComment {
 	}
 
 	@Override
-	public void deleteComment(long blogID, long commentID) {
+	public ResponseEntity<?> deleteComment(long blogID, long commentID, String jwt) throws UserException {
 
-		Blog blog = blogRepository.findById(blogID).get();
-
-		System.out.println("blog" + blog);
+		Users user = authenticationService.findUserUsingJwt(jwt);
 
 		Comment comment = commentRepository.findById(commentID).get();
-
-		commentRepository.delete(comment);
-
-		// TODO Auto-generated method stub
+		System.out.println("x" + user.getId() + " " + comment);
+		if (user.getId() == comment.getUsers().getId()) {
+			System.out.println("y" + user.getId() + " " + comment.getUsers().getId());
+			commentRepository.delete(comment);
+			return ResponseEntity.ok(null);
+		}
+		return (ResponseEntity<?>) ResponseEntity.notFound();
 
 	}
 
 	@Override
-	public Comment updateComment(Comment commentReq, long commentID, long blogID) {
+	public Comment updateComment(Comment commentReq, long commentID, long blogID, String jwt) throws UserException {
+
+		Users user = authenticationService.findUserUsingJwt(jwt);
 
 		Comment comment = commentRepository.findById(commentID)
 				.orElseThrow(() -> new EntityNotFoundException("Comment not found"));
 
-		if (comment.getBlog().getId() == blogID) {
+		if ((comment.getBlog().getId() == blogID) && (user.getId() == comment.getUsers().getId())) {
 			comment.setComment(commentReq.getComment());
 			commentRepository.save(comment);
+			return comment;
 		}
-		return comment;
+		return null;
+		
 	}
 
 }
