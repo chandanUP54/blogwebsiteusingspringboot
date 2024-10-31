@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<section>
+
+		<div class="max-w-2xl mx-auto mt-4 mb-10">
+			<h1 class="text-3xl font-bold mb-6 text-center">Articles</h1>
+			<div th:each="blog : ${blogs}"
+				class="bg-white shadow-md rounded-lg p-4 mb-4">
+				<h2 th:text="${blog.title}" class="text-xl font-semibold mb-2">Article
+					Title 1</h2>
+
+				<p th:if="${#strings.length(blog.summary) > 200}"
+					th:utext="${#strings.substring(blog.summary, 0, 200) + '...'}">
+				</p>
+				<p th:unless="${#strings.length(blog.summary) > 200}"
+					th:utext="${blog.summary}"></p>
+				<a th:href="@{/blog/{id}(id=${blog.id})}"
+					class="mt-4 inline-block text-blue-500">Read Full Article</a>
+			</div>
+
+		</div>
+
+	</section>
+</body>
+</html>

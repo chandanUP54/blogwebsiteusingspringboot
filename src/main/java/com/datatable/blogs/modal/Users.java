@@ -1,5 +1,6 @@
 package com.datatable.blogs.modal;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -8,7 +9,9 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "users")
-public class Users {
+public class Users implements Serializable {
+
+	private static final long serialVersionUID = 1L; // Add this line
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +27,6 @@ public class Users {
     )
     private Set<Role> roles;
     
-   
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "users")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     private Set<Comment> comments;
 }

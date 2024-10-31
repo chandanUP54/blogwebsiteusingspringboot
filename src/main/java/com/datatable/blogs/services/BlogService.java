@@ -24,4 +24,6 @@ public interface BlogService {
 
 	List<Blog> getRecentBlogs();
 
+	List<Blog> findAllBlogs();
+
 }

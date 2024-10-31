@@ -57,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		if (userRole == null) {
 			userRole = new Role();
 			userRole.setName(RoleName.ROLE_USER);
-//	        userRole.setName(RoleName.ROLE_ADMIN);
+//	        userRole.setName(RoleName.ROLE_ADMIN); 
 
 			roleRepository.save(userRole); // Save the role first
 		}
@@ -66,7 +66,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		return userRepository.save(newUser);
 	}
-
+	
+	
 	@Override
 	public JwtAuthenticationResponse signin(SignInRequest signInRequest) {
 

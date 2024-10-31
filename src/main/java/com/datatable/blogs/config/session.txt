@@ -1,0 +1,94 @@
+For session persistence-->>(can use redis)
+1)Dependency->
+
+<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-jdbc</artifactId>
+</dependency>
+
+2)application.properties-->>
+
+spring.session.jdbc.initialize-schema=always
+spring.session.store-type=jdbc
+
+3)security.config-->> 
+.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+						.maximumSessions(1).maxSessionsPreventsLogin(true) // Prevents
+						 .sessionRegistry(sessionRegistry())
+				)
+				
+ @Bean
+	    public SessionRegistry sessionRegistry() {
+	        return new SessionRegistryImpl();
+	    }
+
+4)
+
+(custom signin-->) (remove previous session ie expired)
+when signin you have to tell security context	-->>>
+
+@PostMapping("/signin")
+	public String login(@ModelAttribute SignInRequest signInRequest, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		System.out.println("signin: " + signInRequest);
+
+		Optional<Users> userOptional = userRepository.findByEmail(signInRequest.getUsername());
+
+		if (userOptional.isPresent()
+				&& passwordEncoder.matches(signInRequest.getPassword(), userOptional.get().getPassword())) {
+			Users user = userOptional.get();
+
+			Collection<GrantedAuthority> authorities = user.getRoles().stream()
+					.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+
+			// Create Authentication object
+			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+					authorities);
+
+			SecurityContextHolder.getContext().setAuthentication(authToken); // Set authentication in context
+
+			JwtAuthenticationResponse jwtResponse = authenticationService.signin(signInRequest);
+			createJwtCookies(response, jwtResponse); // Create and set cookies
+
+			HttpSession session = request.getSession(true); // true creates a new session if none exists
+
+			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+					SecurityContextHolder.getContext());
+
+			return "redirect:/"; // Redirect on successful login
+		}
+
+		model.addAttribute("error", "Invalid username or password");
+		return "signin"; // Return to signin page if authentication fails
+	}
+	
+	
+5) 
+@Data
+@Entity
+@Table(name = "users")
+public class Users implements Serializable {
+
+private static final long serialVersionUID = 1L; // Add this line
+	
+6)
+@Data
+@Entity
+public class Role implements Serializable{
+	
+    private static final long serialVersionUID = 1L; // Add this line		
+
+
+7)
+<-----ALTER TABLE spring_session MODIFY COLUMN PRINCIPAL_NAME VARCHAR(512);--->>
+ if data is too long--->>>
+---------------------------------------------------------------
+in 5 and 6th step why Serializable-->>>
+The Serializable interface should be implemented for any class
+ that is stored within the Spring Security session context
+ 
+ ---------------------------------------------------------------------
+ 
+ 8) Implementing Custom logout-->> tell security context for logout , remove session for user
+ 
+ ----------------------------------------------------------------------

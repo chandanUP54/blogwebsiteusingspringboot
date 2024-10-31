@@ -1,41 +1,27 @@
 package com.datatable.blogs.controllers;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.datatable.blogs.dto.SignInRequest;
 import com.datatable.blogs.dto.SignUpRequest;
 import com.datatable.blogs.exception.UserException;
-import com.datatable.blogs.modal.Role;
 import com.datatable.blogs.modal.Users;
 import com.datatable.blogs.repository.UserRepository;
 import com.datatable.blogs.response.JwtAuthenticationResponse;
 import com.datatable.blogs.userservices.AuthenticationService;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 //@RestController
 @Controller
@@ -51,14 +37,6 @@ public class AuthenticationController {
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-
-	// work on restcontroller
-//	@PostMapping("/signup")
-//	public ResponseEntity<Users> signup(@RequestBody SignUpRequest signUpRequest) throws UserException {
-//
-//		return ResponseEntity.ok(authenticationService.signup(signUpRequest));
-//
-//	}
 
 	// work on controller,Thymeleaf,ModelAttribute
 	@PostMapping("/signup")
@@ -77,12 +55,11 @@ public class AuthenticationController {
 		}
 	}
 
-	
+
 	@PostMapping("/signin")
 	public String login(@ModelAttribute SignInRequest signInRequest, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
-
-		System.out.println("signin" + signInRequest);
+		System.out.println("signin: " + signInRequest);
 
 		Optional<Users> userOptional = userRepository.findByEmail(signInRequest.getUsername());
 
@@ -90,52 +67,68 @@ public class AuthenticationController {
 				&& passwordEncoder.matches(signInRequest.getPassword(), userOptional.get().getPassword())) {
 			Users user = userOptional.get();
 
-			System.out.println("user" + user);
-
 			Collection<GrantedAuthority> authorities = user.getRoles().stream()
 					.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
+			// Create Authentication object
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
 					authorities);
 
-			System.out.println("auth" + authToken);
-
-			// Set authentication to the SecurityContext
-			SecurityContextHolder.getContext().setAuthentication(authToken);
+			SecurityContextHolder.getContext().setAuthentication(authToken); // Set authentication in context
 
 			JwtAuthenticationResponse jwtResponse = authenticationService.signin(signInRequest);
-			
-			// Create and set the JWT token cookie
-			Cookie tokenCookie = new Cookie("token", jwtResponse.getToken());
-			tokenCookie.setMaxAge(60 * 60 * 24); // 1 day
-			//tokenCookie.setHttpOnly(true); // Prevent JavaScript access-->>
-			tokenCookie.setPath("/"); // Accessible throughout the application
-			tokenCookie.setSecure(true);
-			response.addCookie(tokenCookie);
+			createJwtCookies(response, jwtResponse); // Create and set cookies
 
-			// Optionally, set a refresh token if needed
-			Cookie refreshTokenCookie = new Cookie("refreshToken", jwtResponse.getRefreshToken());
-			refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
-			refreshTokenCookie.setHttpOnly(true);
-			refreshTokenCookie.setPath("/");
-		    refreshTokenCookie.setSecure(true);
+			HttpSession session = request.getSession(true); // true creates a new session if none exists
 
-			response.addCookie(refreshTokenCookie);
+			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+					SecurityContextHolder.getContext());
 
-			HttpSession session = request.getSession(true);
-			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-			return "redirect:/";
+			return "redirect:/"; // Redirect on successful login
 		}
 
 		model.addAttribute("error", "Invalid username or password");
-		return "signin";
+		return "signin"; // Return to signin page if authentication fails
 	}
 
-	// Rest Controller
-//	@PostMapping("/signin")
-//	public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SignInRequest signInRequest) {
-//
-//		return ResponseEntity.ok(authenticationService.signin(signInRequest));
-//	}
+	// Helper method to create JWT cookies
+	private void createJwtCookies(HttpServletResponse response, JwtAuthenticationResponse jwtResponse) {
+		Cookie tokenCookie = new Cookie("token", jwtResponse.getToken());
+		tokenCookie.setMaxAge(60 * 60 * 24); // 1 day
+		tokenCookie.setPath("/");
+		tokenCookie.setSecure(true);
+		response.addCookie(tokenCookie);
+
+		Cookie refreshTokenCookie = new Cookie("refreshToken", jwtResponse.getRefreshToken());
+		refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setSecure(true);
+		response.addCookie(refreshTokenCookie);
+
+	}
+
+	@GetMapping("/x") //for custom logout
+	public String logout(HttpServletRequest request, HttpServletResponse response) {
+		// Invalidate the session
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+
+		SecurityContextHolder.clearContext();
+        //revoke all jwt also
+		clearCookies(request, response, "JSESSIONID", "token", "refreshToken");
+
+		return "redirect:/signin?logout=true";
+	}
+
+	private void clearCookies(HttpServletRequest request, HttpServletResponse response, String... cookiesToDelete) {
+		for (String cookieName : cookiesToDelete) {
+			Cookie cookie = new Cookie(cookieName, null);
+			cookie.setPath(request.getContextPath());
+			cookie.setMaxAge(0);
+			response.addCookie(cookie);
+		}
+	}
+
 }

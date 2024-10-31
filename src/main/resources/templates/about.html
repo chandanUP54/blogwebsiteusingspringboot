@@ -16,24 +16,17 @@
 	<div>
 		<h1 class="text-6xl font-bold text-gray-800 m-4">BlogX</h1>
 		<h1>Created By Chandan Chauhan</h1>
-		<div sec:authorize="hasRole('USER')">
+		<div sec:authorize="hasRole('USER')"  class="mb-4 mt-4">
 			<a th:href="@{/user}"
-				class="text-gray-900 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">User</a>
+				class="text-gray-900 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">You
+				Are a User</a>
 		</div>
-		<div sec:authorize="hasRole('ADMIN')">
+		<div sec:authorize="hasRole('ADMIN')" class="mb-4 mt-4">
 			<a th:href="@{/admin}"
-				class="text-gray-900 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Admin</a>
+				class="text-gray-900 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">You
+				Are Admin</a>
 		</div>
 
-		<div>
-			<p>
-				Credentials: <span sec:authentication="Credentials">NOT FOUND</span>
-			</p>
-			
-			<p>
-				IS Auth:<span sec:authorize="isAuthenticated()">Yes</span>
-			</p>
-		</div>
 		<a href="/"
 			class="mt-6 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Go
 			Back Home</a>

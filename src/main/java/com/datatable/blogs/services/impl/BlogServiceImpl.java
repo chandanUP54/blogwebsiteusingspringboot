@@ -135,4 +135,9 @@ public class BlogServiceImpl implements BlogService {
         return blogRepository.findByPublishedAtTrueOrderByCreatedAtDesc(pageable).getContent();
 	}
 
+	@Override
+	public List<Blog> findAllBlogs() {
+		return 	blogRepository.findAllByPublishedAtTrue();
+	}
+
 }

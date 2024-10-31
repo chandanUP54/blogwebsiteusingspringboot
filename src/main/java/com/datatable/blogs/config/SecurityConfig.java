@@ -10,14 +10,16 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import com.datatable.blogs.userservices.CustomSuccessHandler;
 import com.datatable.blogs.userservices.UserInfoUserDetailsService;
 
@@ -41,9 +43,15 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
+	 @Bean
+	    public SessionRegistry sessionRegistry() {
+	        return new SessionRegistryImpl();
+	    }
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
 		http.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authorize -> authorize.requestMatchers("/admin/**", "/allblogs").hasRole("ADMIN") // Admin
 
@@ -51,19 +59,23 @@ public class SecurityConfig {
 						.requestMatchers("/api/**").authenticated() // All other API endpoints
 
 						.anyRequest().permitAll() // Permit all other requests
-				).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+				).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+						.maximumSessions(1).maxSessionsPreventsLogin(true) // Prevents
+						 .sessionRegistry(sessionRegistry())
+				)
 
 				.authenticationProvider(authenticationProvider())
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) //jwt
 
-				//.formLogin(form -> form.loginPage("/signin").loginProcessingUrl("/signin")
-					//	.successHandler(customSuccessHandler).permitAll())
+				// .formLogin(form -> form.loginPage("/signin").loginProcessingUrl("/signin")
+				// .successHandler(customSuccessHandler).permitAll()) //->created custom login
 				.logout(form -> form.invalidateHttpSession(true).clearAuthentication(true)
-						.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).deleteCookies("JSESSIONID","token","refreshToken")
-						.logoutSuccessUrl("/signin?logout=true").permitAll())
+						.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+						.deleteCookies("SESSION", "token", "refreshToken").logoutSuccessUrl("/signin?logout=true")
+						.permitAll())
 
 		;
-		
+
 		return http.build();
 	}
 
@@ -80,6 +92,4 @@ public class SecurityConfig {
 		return config.getAuthenticationManager();
 	}
 
-
-	
 }

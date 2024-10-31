@@ -43,7 +43,10 @@ public class BlogDetails {
 		Blog blog = blogService.getBlogById(id);
 		List<Comment> comments = blogComment.findAllCommentForABlog(id);
 
-		model.addAttribute("blog", blog);
+		if (blog.getPublishedAt() != null) {
+			model.addAttribute("blog", blog);
+		}
+
 		model.addAttribute("comments", comments);
 
 		String users;
@@ -51,12 +54,8 @@ public class BlogDetails {
 			users = p.getName();
 			String email = users.substring(users.indexOf("email=") + 6, users.indexOf(",", users.indexOf("email=")));
 
-			System.out.println("userx-> " + email);
 			model.addAttribute("currentemail", email);
 		}
-
-		System.out.println("comments" + comments);
-
 		return "blogpage";
 
 	}
